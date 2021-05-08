@@ -1,2 +1,2 @@
-*/5 * * * * . /root/project_env.sh; cd /www; /usr/local/bin/python /www/project/manage.py healthcheck -p 8080 >> /var/log/cron.log 2>&1
+*/5 * * * * . /root/project_env.sh; cd /www; /usr/local/bin/python /www/project/manage.py healthcheck -p 8000 >> /var/log/cron.log 2>&1
 # This extra line makes it a valid cron
