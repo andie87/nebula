@@ -1,0 +1,79 @@
+.flexed {
+    display: flex !important;
+    flex-grow: 1 !important;
+  }
+
+  .flexed.flex-vertical {
+    flex-direction: column; }
+  .flexed.flex-horizontal {
+    flex-direction: row; }
+  .flexed.flex-wrap {
+    flex-wrap: wrap; }
+  .flexed.justify-content-center {
+    justify-content: center; }
+  .flexed.justify-content-space-between {
+    justify-content: space-between; }
+  .flexed.justify-content-space-around {
+    justify-content: space-around; }
+  .flexed.justify-content-end {
+    justify-content: flex-end; }
+  .flexed.align-items-start {
+    align-items: flex-start;
+    -webkit-align-items: flex-start; }
+  .flexed.align-items-center {
+    align-items: center;
+    -webkit-align-items: center; }
+  .flexed.align-items-end {
+    align-items: flex-end;
+    -webkit-align-items: flex-end; }
+  .flexed.align-content-center {
+    align-content: center;
+    -webkit-align-content: center; }
+  .flexed.align-self-center {
+    align-self: center;
+    -webkit-align-self: center; }
+
+.ravier-text__note {
+        font-size: 12px;
+        color: #666666;
+        line-height: 18px; }
+
+.ravier-text__title {
+    font-family: 'Eina01';
+    font-size: 16px;
+    line-height: 24px; }
+
+.mb-16px {
+        margin-bottom: 16px !important;
+}
+
+
+.mt-32px {
+    margin-top: 32px !important;
+}
+.wrapper-footer{
+    margin-top: 254px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.wrapper-footer img {
+    width: 68px;
+}
+
+.powered{
+    width: 66px;
+    height: 16px;
+    margin: 0 8px 0 0;
+    text-shadow: 1px 2px 4px rgba(255, 255, 255, 0.5);
+    font-family: SFProText;
+    font-size: 12px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.5;
+    letter-spacing: normal;
+    text-align: left;
+    color: #666666;
+}
