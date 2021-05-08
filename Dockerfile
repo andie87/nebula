@@ -43,6 +43,8 @@ RUN cp -rf /www/static project/
 
 RUN mkdir /www/project/temp
 
+RUN chmod -R 777 /www/project/accesslog
+
 ENV PYTHONWARNINGS="ignore:Unverified HTTPS request"
 #ENTRYPOINT [ "gunicorn", "-t", "300", "--workers", "3", "--chdir", "/www/project", "project.wsgi:application", "--bind", "0.0.0.0:8080"  ]
 RUN service cron start
