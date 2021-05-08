@@ -1,8 +1,7 @@
 """
 Django settings for project production.
-created by derta isyajora rakhman
-date :  7 October 2020
-email : derta.isyajora@ovo.id
+
+
 
 this is conviguration for init
 

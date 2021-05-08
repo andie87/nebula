@@ -28,7 +28,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__fil
 
 # SECURITY WARNING: keep the secret key used in production secret!
 # SECRET_KEY = 'd11_nasa(%4q$b0^d*4lel+7r9xvg0b@5__x05%#cx@9-9)sg@'
-SECRET_KEY = 'Ovo_Develop3r123_Dev!!!'
+SECRET_KEY = 'nebula_Develop3r123_Dev!!!'
 
 # TEST TRIGGER ##
 
