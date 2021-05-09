@@ -43,7 +43,7 @@ CACHES = {
     }
 }
 
-DEBUG = True
+DEBUG = False
 
 # BROKER_KAFKA = '10.30.225.102:9092'
 # TOPIC_KAFKA = "API_GATEWAY_LOG"
@@ -65,8 +65,10 @@ print("PRODUCTION")
 REDIS_HOST = os.environ.get('REDIS_HOST', '')
 REDIS_PASSWORD = None
 
-# options = {
-#     'statsd_host': 'dogstatsd.datadog-system.svc.cluster.local',
-#     'statsd_port': 8125
-# }
-# initialize(**options)
+STATIC_URL = os.environ.get('STATIC_HOST', '')+'/static/'
+STATIC_ROOT = os.path.join(os.path.dirname(BASE_DIR), "static")
+STATICFILES_DIRS = [
+    #os.path.join(os.path.dirname(os.path.dirname(BASE_DIR)), "/static"),
+    os.path.join(BASE_DIR, "static"),
+    #os.path.join(BASE_DIR, "/www/static")
+]

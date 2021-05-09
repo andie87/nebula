@@ -38,8 +38,8 @@ RUN mkdir -p project/static
 RUN mkdir -p /www/log
 RUN touch /www/log/app.log
 
-RUN echo 'yes' | project/manage.py collectstatic
-RUN cp -rf /www/static project/
+# RUN echo 'yes' | project/manage.py collectstatic
+# RUN cp -rf /www/static project/
 
 RUN mkdir /www/project/temp
 
