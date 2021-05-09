@@ -43,7 +43,7 @@ CACHES = {
     }
 }
 
-DEBUG = False
+DEBUG = True
 
 # BROKER_KAFKA = '10.30.225.102:9092'
 # TOPIC_KAFKA = "API_GATEWAY_LOG"
