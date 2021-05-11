@@ -65,7 +65,7 @@ class gateway(APIView):
         # go to resource
         res = apimodel[0].send_request(request)
         if res.headers.get('Content-Type', '').lower().startswith('application/json'):
-            data = json.dumps(request.data)
+            data = res.json()
         else:
             data = res.content
 
