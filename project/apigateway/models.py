@@ -49,6 +49,10 @@ class Api(models.Model):
     plugin = models.IntegerField(choices=PLUGIN_CHOICE_LIST, default=0)
     consumers = models.ManyToManyField(Consumer, blank=True)
 
+    def save(self, *args, **kwargs):
+        self.request_path = f"/{self.name}"
+        super(Api, self).save(*args, **kwargs)
+
 
     def check_plugin(self, request):
         if self.plugin == 0:
