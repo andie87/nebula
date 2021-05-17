@@ -28,6 +28,7 @@ class Consumer(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     apikey = models.CharField(max_length=64, default=generate_key)
     secretkey = models.CharField(max_length=256, default=generate_secret)
+    description = models.TextField(blank=True, null=True)
 
     def __unicode__(self):
         return self.user.username
@@ -48,6 +49,8 @@ class Api(models.Model):
     upstream_url = models.CharField(max_length=255)
     plugin = models.IntegerField(choices=PLUGIN_CHOICE_LIST, default=0)
     consumers = models.ManyToManyField(Consumer, blank=True)
+    description = models.TextField(blank=True, null=True)
+
 
     def save(self, *args, **kwargs):
         self.request_path = f"/{self.name}"
