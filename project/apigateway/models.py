@@ -29,6 +29,19 @@ class Consumer(models.Model):
     apikey = models.CharField(max_length=64, default=generate_key)
     secretkey = models.CharField(max_length=256, default=generate_secret)
     description = models.TextField(blank=True, null=True)
+    created_by =  models.ForeignKey( User,
+        verbose_name="Created By user ID",
+        on_delete=models.SET_NULL,
+        related_name="created_by_user_id",
+        db_column='created_by', blank=True, null=True
+    )
+
+    modified_by =  models.ForeignKey( User,
+        verbose_name="Modified By user ID",
+        on_delete=models.SET_NULL,
+        related_name="modified_by_user_id",
+        db_column='modified_by', blank=True, null=True
+    )
 
     def __unicode__(self):
         return self.user.username
@@ -50,6 +63,19 @@ class Api(models.Model):
     plugin = models.IntegerField(choices=PLUGIN_CHOICE_LIST, default=0)
     consumers = models.ManyToManyField(Consumer, blank=True)
     description = models.TextField(blank=True, null=True)
+    created_by =  models.ForeignKey( User,
+        verbose_name="Created By API user ID",
+        on_delete=models.SET_NULL,
+        related_name="created_by_api_user_id",
+        db_column='created_by', blank=True, null=True
+    )
+
+    modified_by =  models.ForeignKey( User,
+        verbose_name="Modified By API user ID",
+        on_delete=models.SET_NULL,
+        related_name="modified_by_api_user_id",
+        db_column='modified_by', blank=True, null=True
+    )
 
 
     def save(self, *args, **kwargs):
