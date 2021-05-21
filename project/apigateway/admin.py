@@ -1,5 +1,6 @@
 from django.contrib import admin
 from .models import Api, Consumer
+from django.db.models import Q
 
 
 class ApiAdmin(admin.ModelAdmin):
@@ -24,7 +25,9 @@ class ApiAdmin(admin.ModelAdmin):
   def get_queryset(self, request):
     qs = super(ApiAdmin, self).get_queryset(request)
     if not request.user.is_superuser:
-      return qs.filter(created_by=request.user)
+      user = Consumer.objects.filter(user__username=request.user)
+      return qs.filter(Q(created_by=request.user)|Q(consumers__in=user))
+
     else:
       return qs
 
@@ -53,7 +56,7 @@ class ConsumerAdmin(admin.ModelAdmin):
   def get_queryset(self, request):
     qs = super(ConsumerAdmin, self).get_queryset(request)
     if not request.user.is_superuser:
-      return qs.filter(created_by=request.user)
+      return qs.filter(Q(created_by=request.user)|Q(user__username=request.user))
     else:
       return qs
 
