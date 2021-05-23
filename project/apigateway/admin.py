@@ -32,10 +32,12 @@ class ApiAdmin(admin.ModelAdmin):
       return qs
 
   def has_change_permission(self, request, obj=None):
-    if not obj:
-      # the changelist itself
+    if request.user.is_superuser:
       return True
-    return obj.created_by == request.user
+
+  def has_delete_permission(self, request, obj=None):
+    if request.user.is_superuser:
+      return True
 
 
 class ConsumerAdmin(admin.ModelAdmin):
@@ -61,10 +63,7 @@ class ConsumerAdmin(admin.ModelAdmin):
       return qs
 
   def has_change_permission(self, request, obj=None):
-    if not obj:
-      # the changelist itself
-      return True
-    return obj.created_by == request.user
+    return True
 
 # Register your models here.
 admin.site.register(Api, ApiAdmin)
