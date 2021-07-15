@@ -5,6 +5,8 @@ import time
 import pytz
 
 from django.conf import  settings
+from django.core.cache import cache
+# from ratelimit.decorators import ratelimit
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
@@ -17,6 +19,7 @@ class gateway(APIView):
 
     logger = AccessLogMiddleware()
 
+    # @ratelimit(key='header:AUTHORIZATION', rate='5/m')
     def operation(self, request):
         time_log = datetime.datetime.now().astimezone(pytz.timezone(settings.TIME_ZONE)).strftime("%Y-%m-%dT%H:%M:%S")
         start_time = (time.time())
@@ -34,7 +37,10 @@ class gateway(APIView):
 
             return Response(resp, status=status.HTTP_400_BAD_REQUEST)
         
-        apimodel = Api.objects.filter(name=path[2])
+        apimodel = cache.get(path[2])
+        if not apimodel:
+            apimodel = Api.objects.filter(name=path[2])
+            cache.set(path[2], apimodel, 60)
         if apimodel.count() != 1:
             resp = json_response.render_api_error_response("wrong API Gateway config", error_list=[],
                                                            process_time=(time.time() - start_time),
@@ -63,7 +69,11 @@ class gateway(APIView):
             return Response(resp, status=status.HTTP_403_FORBIDDEN)
 
         # go to resource
-        res = apimodel[0].send_request(request)
+        key = "{}|{}|{}|{}|{}".format(request.path_info, request.META['REQUEST_METHOD'], request.META['HTTP_AUTHORIZATION'], request.META['REMOTE_ADDR'], request.body)
+        res = cache.get(key)
+        if not res:
+            res = apimodel[0].send_request(request)
+            cache.set(key, res, 60)
         if res.headers.get('Content-Type', '').lower().startswith('application/json'):
             data = res.json()
         else:

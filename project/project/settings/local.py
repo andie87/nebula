@@ -35,12 +35,13 @@ DEBUG = True
 ASSET_ROOT = os.path.join(os.path.dirname(BASE_DIR), "project/assets")
 
 CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-        'TIMEOUT': None,
-        'LOCATION': [
-            'localhost:11211'
-        ]
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/1",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient"
+        },
+        "KEY_PREFIX": "example"
     }
 }
 

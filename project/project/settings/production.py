@@ -34,24 +34,25 @@ DATABASES = {
 }
 
 CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-        'TIMEOUT': None,
-        'LOCATION': [
-            'localhost:11211'
-        ]
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://{}:6379/1".format(os.environ.get('REDIS_HOST', '')),
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient"
+        },
+        "KEY_PREFIX": "example"
     }
 }
 
 DEBUG = False
 
-# BROKER_KAFKA = '10.30.225.102:9092'
-# TOPIC_KAFKA = "API_GATEWAY_LOG"
+BROKER_KAFKA = os.environ.get('BROKER_KAFKA', '')
+TOPIC_KAFKA = "API_GATEWAY_LOG"
 
 
-# CONFLUENT_KAFKA_PRODUCER = {"bootstrap.servers": BROKER_KAFKA,
-#                             "retries": "5"}
-# KAFKA_PRODUCER = Producer(CONFLUENT_KAFKA_PRODUCER)
+CONFLUENT_KAFKA_PRODUCER = {"bootstrap.servers": BROKER_KAFKA,
+                            "retries": "5"}
+KAFKA_PRODUCER = Producer(CONFLUENT_KAFKA_PRODUCER)
 
 ASSET_ROOT = os.path.join(os.path.dirname(BASE_DIR), "project/assets")
 

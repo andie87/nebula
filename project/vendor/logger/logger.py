@@ -27,14 +27,13 @@ class AccessLogMiddleware(object):
             "inserted_time" : int(time.time())
         }
 
-        # kafka_producer = settings.KAFKA_PRODUCER
-        # try:
-        #     data = json.dumps(log_data).encode('utf-8')
-        #     result = kafka_producer.produce(settings.TOPIC_KAFKA, data)
-        #     kafka_producer.producer_poll(0)
-        # except Exception as ex:
-        #     kafka_producer.producer_poll(1)
-        #     msg = "[AccessLogMiddleware][__call__] KafkaException, err : {}".format(str(ex))
-        #     print(msg)
-        #     logger.error(msg)
-
+        kafka_producer = settings.KAFKA_PRODUCER
+        try:
+            data = json.dumps(log_data).encode('utf-8')
+            result = kafka_producer.produce(settings.TOPIC_KAFKA, data)
+            kafka_producer.producer_poll(0)
+        except Exception as ex:
+            kafka_producer.producer_poll(1)
+            msg = "[AccessLogMiddleware][__call__] KafkaException, err : {}".format(str(ex))
+            print(msg)
+            logger.error(msg)
