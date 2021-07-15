@@ -47,7 +47,7 @@ CACHES = {
 DEBUG = False
 
 BROKER_KAFKA = os.environ.get('BROKER_KAFKA', '')
-TOPIC_KAFKA = "API_GATEWAY_LOG"
+TOPIC_KAFKA = os.environ.get('TOPIC_KAFKA', '')
 
 
 CONFLUENT_KAFKA_PRODUCER = {"bootstrap.servers": BROKER_KAFKA,
