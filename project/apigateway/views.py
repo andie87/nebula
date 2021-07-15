@@ -69,7 +69,15 @@ class gateway(APIView):
             return Response(resp, status=status.HTTP_403_FORBIDDEN)
 
         # go to resource
-        key = "{}|{}|{}|{}|{}".format(request.path_info, request.META['REQUEST_METHOD'], request.META['HTTP_AUTHORIZATION'], request.META['REMOTE_ADDR'], request.body)
+        if 'HTTP_AUTHORIZATION' in request.META:
+            http_auth = request.META['HTTP_AUTHORIZATION']
+        elif 'HTTP_SIGNATURE' in request.META:
+            http_auth = request.META['HTTP_SIGNATURE']
+        elif 'HTTP_APIKEY' in request.META:
+            http_auth = request.META['HTTP_APIKEY']
+        else:
+            http_auth = ''
+        key = "{}|{}|{}|{}|{}".format(request.path_info, request.META['REQUEST_METHOD'], http_auth, request.META['REMOTE_ADDR'], request.body)
         res = cache.get(key)
         if not res:
             res = apimodel[0].send_request(request)

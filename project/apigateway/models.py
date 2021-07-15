@@ -85,7 +85,7 @@ class Api(models.Model):
 
     def check_plugin(self, request):
         if self.plugin == 0:
-            return True, ''
+            return True, '', ''
             
         elif self.plugin == 1:
             try:
