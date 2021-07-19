@@ -21,7 +21,7 @@ class gateway(APIView):
 
     # @ratelimit(key='header:AUTHORIZATION', rate='5/m')
     def operation(self, request):
-        time_log = datetime.datetime.now().astimezone(pytz.timezone(settings.TIME_ZONE)).strftime("%Y-%m-%dT%H:%M:%S")
+        time_log = datetime.datetime.now().astimezone(pytz.timezone(settings.TIME_ZONE)).strftime("%Y-%m-%d %H:%M:%S")
         start_time = (time.time())
         path = request.path_info.split('/')
         if len(path) < 2:
