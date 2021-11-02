@@ -19,13 +19,15 @@ class AccessLogMiddleware(object):
             "MM": time_stamp.split("-")[1],
             "HH": (time_stamp.split(" ")[1]).split(":")[0],
             "DD": (time_stamp.split(" ")[0]).split("-")[2],
-            "request": request_body,
-            "response": response,
+            "request": str(request_body),
+            "response": str(response),
             "status_code": status_code,
             "retry_counter" : 0,
             "max_retry" : 15,
             "inserted_time" : int(time.time())
         }
+        
+        #print(f"log data {log_data}")
 
         kafka_producer = settings.KAFKA_PRODUCER
         try:

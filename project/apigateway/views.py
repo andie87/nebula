@@ -6,20 +6,21 @@ import pytz
 
 from django.conf import  settings
 from django.core.cache import cache
-# from ratelimit.decorators import ratelimit
+
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
 from .models import Api
 from vendor.template import json_response
 from vendor.logger.logger import AccessLogMiddleware
+from rest_admin.src.modules.throttle import throttling
 
 class gateway(APIView):
+    throttle_classes = [throttling.GatewayRateThrottle]
     authentication_classes = ()
 
     logger = AccessLogMiddleware()
 
-    # @ratelimit(key='header:AUTHORIZATION', rate='5/m')
     def operation(self, request):
         time_log = datetime.datetime.now().astimezone(pytz.timezone(settings.TIME_ZONE)).strftime("%Y-%m-%d %H:%M:%S")
         start_time = (time.time())
@@ -32,7 +33,7 @@ class gateway(APIView):
 
             self.logger.logging(user="", path=request.get_full_path(), service_name="", time_stamp=time_log,
                                 response_time=(time.time() - start_time),
-                                request_body=(json.loads(request.body)) if request.method.lower() != 'get' else "",
+                                request_body=(json.loads(request.body)) if request.method.lower() != 'get' else {},
                                 response=resp, status_code=400)
 
             return Response(resp, status=status.HTTP_400_BAD_REQUEST)
@@ -40,7 +41,7 @@ class gateway(APIView):
         apimodel = cache.get(path[2])
         if not apimodel:
             apimodel = Api.objects.filter(name=path[2])
-            cache.set(path[2], apimodel, 60)
+            cache.set(path[2], apimodel, settings.CACHE_LIMIT)
         if apimodel.count() != 1:
             resp = json_response.render_api_error_response("wrong API Gateway config", error_list=[],
                                                            process_time=(time.time() - start_time),
@@ -49,7 +50,7 @@ class gateway(APIView):
             # logger
             self.logger.logging(user="", path=request.get_full_path(), service_name=path[2], time_stamp=time_log,
                                 response_time=(time.time() - start_time),
-                                request_body=(json.loads(request.body)) if request.method.lower() != 'get' else "",
+                                request_body=(json.loads(request.body)) if request.method.lower() != 'get' else {},
                                 response=resp, status_code=400)
 
             return Response(resp, status=status.HTTP_400_BAD_REQUEST)
@@ -63,7 +64,7 @@ class gateway(APIView):
             # logger
             self.logger.logging(user=username, path=request.get_full_path(), service_name=path[2], time_stamp=time_log,
                                 response_time=(time.time() - start_time),
-                                request_body=(json.loads(request.body)) if request.method.lower() != 'get' else "",
+                                request_body=(json.loads(request.body)) if request.method.lower() != 'get' else {},
                                 response=resp, status_code=403)
 
             return Response(resp, status=status.HTTP_403_FORBIDDEN)
@@ -81,7 +82,7 @@ class gateway(APIView):
         res = cache.get(key)
         if not res:
             res = apimodel[0].send_request(request)
-            cache.set(key, res, 60)
+            cache.set(key, res, settings.CACHE_LIMIT)
         if res.headers.get('Content-Type', '').lower().startswith('application/json'):
             data = res.json()
         else:
@@ -90,9 +91,12 @@ class gateway(APIView):
 
         #logger
         self.logger.logging(user=username, path=request.get_full_path(), service_name=path[2], time_stamp=time_log,
-                            response_time=(time.time() - start_time), request_body= request.data if res.headers.get('Content-Type', '').lower() == 'application/json' else "",
+                            response_time=(time.time() - start_time), request_body= request.data if res.headers.get('Content-Type', '').lower().startswith('application/json') or res.headers.get('content-type', '').lower().startswith('application/json') else {},
                             response=data, status_code=res.status_code)
-
+        #request_payload= request.data if res.headers.get('Content-Type', '').lower().startswith('application/json') or res.headers.get('content-type', '').lower().startswith('application/json') else {}
+        #print(f"request {request.data}")
+        #print(f"request payload {request_payload}")
+        #print(f"headers {res.headers}")
         return Response(data=data, status=res.status_code)
     
     def get(self, request):

@@ -12,6 +12,7 @@ from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from rest_framework.authentication import get_authorization_header, BasicAuthentication
 from .auth import CacheBasicAuthentication
+from django.conf import  settings
 
 
 
@@ -76,11 +77,16 @@ class Api(models.Model):
         related_name="modified_by_api_user_id",
         db_column='modified_by', blank=True, null=True
     )
-
+    
+    @property
+    def exposed_url(self):
+        return "{}/service{}/".format(settings.DEFAULT_REDIRECT_URL, self.request_path)
 
     def save(self, *args, **kwargs):
         self.request_path = f"/{self.name}"
         super(Api, self).save(*args, **kwargs)
+        
+        
 
 
     def check_plugin(self, request):
@@ -210,7 +216,7 @@ class Api(models.Model):
         else:
             data = request.data
 
-        return method_map[method](url, headers=headers, data=data, files=request.FILES)
+        return method_map[method](url, headers=headers, data=data, files=request.FILES, verify=False)
 
     def __unicode__(self):
         return self.name

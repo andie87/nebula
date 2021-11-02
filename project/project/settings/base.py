@@ -52,8 +52,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # 'notifications',
     'django_extensions',
-    'polymorphic'
-
+    'polymorphic',
 ]
 
 MIDDLEWARE = [
@@ -74,6 +73,15 @@ REST_FRAMEWORK = {
     'DEFAULT_FILTER_BACKENDS': (
         'rest_framework_filters.backends.DjangoFilterBackend',
     ),
+    'DEFAULT_THROTTLE_CLASSES': [
+        'rest_framework.throttling.AnonRateThrottle',
+        'rest_framework.throttling.UserRateThrottle'
+    ],
+    'DEFAULT_THROTTLE_RATES': {
+        'anon': '5/minute',
+        'user': '4/minute',
+        'gateway': '10/minute'
+    }
 }
 
 ROOT_URLCONF = 'project.urls'
@@ -208,6 +216,8 @@ USE_TZ = True
 
 TIMEOUT_LIMIT = 100
 
+DEFAULT_REDIRECT_URL = os.environ.get('DEFAULT_REDIRECT_URL', 'http://nebula-gateway-nebula.apps.alpha.kalbe.co.id')
+
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
@@ -227,3 +237,5 @@ LOG_FOLDER = os.path.join(os.path.dirname(BASE_DIR),"log")
 FILE_ROOT = os.path.join(BASE_DIR, "temp")
 
 ASSET_ROOT = os.path.join(BASE_DIR, "assets")
+
+CACHE_LIMIT = int(os.environ.get('CACHE_LIMIT', '60'))
