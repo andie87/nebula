@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
 import requests, json
-import string
-import random
 import secrets
 import time
 import hmac, hashlib, base64
-
+import random, string, re
+from django.core.exceptions import ValidationError
 
 from django.db import models
 from django.contrib.auth.models import User
@@ -14,7 +13,10 @@ from rest_framework.authentication import get_authorization_header, BasicAuthent
 from .auth import CacheBasicAuthentication
 from django.conf import  settings
 
-
+def alphanumerica_and_space_only(value):
+    valid = re.match(r'^[a-zA-Z\d\-_\s]+$', value) is not None
+    if not valid:
+        raise ValidationError("only alphabets , numeric, dash ( - ) and space are allowed")
 
 
 # Create your models here.
@@ -58,8 +60,8 @@ class Api(models.Model):
         (3, _('Server auth')),
         (4, _('HMAC')),
     )
-    name = models.CharField(max_length=128, unique=True)
-    request_path = models.CharField(max_length=255)
+    name = models.CharField(max_length=128, unique=True, validators=[alphanumerica_and_space_only])
+    request_path = models.CharField(max_length=255, editable=False)
     upstream_url = models.CharField(max_length=255)
     plugin = models.IntegerField(choices=PLUGIN_CHOICE_LIST, default=0)
     consumers = models.ManyToManyField(Consumer, blank=True)
@@ -83,10 +85,9 @@ class Api(models.Model):
         return "{}/service{}/".format(settings.DEFAULT_REDIRECT_URL, self.request_path)
 
     def save(self, *args, **kwargs):
+        self.name = self.name.strip().replace(" ","-")
         self.request_path = f"/{self.name}"
         super(Api, self).save(*args, **kwargs)
-        
-        
 
 
     def check_plugin(self, request):
