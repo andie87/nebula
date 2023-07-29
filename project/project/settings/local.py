@@ -50,7 +50,7 @@ PORT = 7051
 ENV = 'local'
 
 BROKER_KAFKA = 'localhost:9092'
-TOPIC_KAFKA = "API_GATEWAY_LOG"
+#TOPIC_KAFKA = "API_GATEWAY_LOG"
 
 
 CONFLUENT_KAFKA_PRODUCER = {"bootstrap.servers": BROKER_KAFKA,
@@ -61,6 +61,20 @@ KAFKA_PRODUCER = Producer(CONFLUENT_KAFKA_PRODUCER)
 
 REDIS_HOST = 'localhost'
 REDIS_PASSWORD = None
+
+BROKER_KAFKA = 'localhost:9092'
+TOPIC_KAFKA = ["API_GATEWAY_LOG"]
+
+
+CONFLUENT_KAFKA_CONSUMER = {"bootstrap.servers": BROKER_KAFKA,\
+                            "group.id": "apigwlistener",\
+                            "enable.auto.commit": True,\
+                            "session.timeout.ms": 6000,\
+                            "default.topic.config": {"auto.offset.reset": "smallest"}\
+                            }
+
+INDEX_NAME = 'apigw_log'
+
 
 
 

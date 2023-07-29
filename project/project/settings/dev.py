@@ -58,6 +58,22 @@ ENV = 'dev'
 # CONNECTION = psycopg2.connect(host= DATABASES["default"]['HOST'], database=DATABASES["default"]['NAME'], \
 #     user=DATABASES["default"]['USER'], password=DATABASES["default"]['PASSWORD'])
 # CURS = CONNECTION.cursor()
+
+
+BROKER_KAFKA = '10.30.225.102:9092'
+TOPIC_KAFKA = ["API_GATEWAY_LOG"]
+
+
+CONFLUENT_KAFKA_CONSUMER = {"bootstrap.servers": BROKER_KAFKA,\
+                            "group.id": "apigwlistener",\
+                            "enable.auto.commit": True,\
+                            "session.timeout.ms": 6000,\
+                            "default.topic.config": {"auto.offset.reset": "smallest"}\
+                            }
+
+INDEX_NAME = 'apigw_log'
+
+
 print("DEV")
 print("setting succesfully loaded")
 

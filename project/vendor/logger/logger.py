@@ -32,7 +32,7 @@ class AccessLogMiddleware(object):
         kafka_producer = settings.KAFKA_PRODUCER
         try:
             data = json.dumps(log_data).encode('utf-8')
-            result = kafka_producer.produce(settings.TOPIC_KAFKA, data)
+            result = kafka_producer.produce(settings.TOPIC_KAFKA[0], data)
             kafka_producer.producer_poll(0)
         except Exception as ex:
             kafka_producer.producer_poll(1)

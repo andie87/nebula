@@ -50,7 +50,7 @@ else:
     DEBUG = False
 
 BROKER_KAFKA = os.environ.get('BROKER_KAFKA', '')
-TOPIC_KAFKA = os.environ.get('TOPIC_KAFKA', '')
+TOPIC_KAFKA = [os.environ.get('TOPIC_KAFKA', '')]
 
 
 CONFLUENT_KAFKA_PRODUCER = {"bootstrap.servers": BROKER_KAFKA,
@@ -95,3 +95,12 @@ REST_FRAMEWORK = {
         'gateway': '{}/minute'.format(os.environ.get('RATE_LIMIT', '100'))
     }
 }
+
+INDEX_NAME = 'apigw_log'
+
+CONFLUENT_KAFKA_CONSUMER = {"bootstrap.servers": BROKER_KAFKA,\
+                            "group.id": "apigwlistener",\
+                            "enable.auto.commit": True,\
+                            "session.timeout.ms": 6000,\
+                            "default.topic.config": {"auto.offset.reset": "smallest"}\
+                            }
