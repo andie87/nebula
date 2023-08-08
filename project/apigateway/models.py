@@ -22,10 +22,10 @@ def alphanumerica_and_space_only(value):
 # Create your models here.
 class Consumer(models.Model):
 
-    def generate_key():
+    def generate_key(self):
         return ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(10))
 
-    def generate_secret():
+    def generate_secret(self):
         return secrets.token_urlsafe(32)
 
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -51,6 +51,30 @@ class Consumer(models.Model):
 
     def __str__(self):
         return self.user.username
+
+class Log_api(models.Model):
+    path = models.CharField(max_length=256, blank=True, null=True)
+    user = models.CharField(max_length=64, blank=True, null=True)
+    service_name = models.CharField(max_length=64, blank=True, null=True)
+    response_time = models.DecimalField(blank=True, null=True)
+    time_stamp = models.DateTimeField(blank=True, null=True)
+    MM = models.CharField(max_length=64, blank=True, null=True)
+    HH = models.CharField(max_length=64, blank=True, null=True)
+    DD = models.CharField(max_length=64, blank=True, null=True)
+    request = models.TextField( blank=True, null=True)
+    response = models.TextField( blank=True, null=True)
+    status_code = models.IntegerField(blank=True, null=True)
+    retry_counter = models.IntegerField(blank=True, null=True)
+    inserted_time = models.BigIntegerField(blank=True, null=True)
+
+    def __unicode__(self):
+        return self.path
+
+    def __str__(self):
+        return self.path
+
+
+
 
 class Api(models.Model):
     PLUGIN_CHOICE_LIST  = (
@@ -224,3 +248,28 @@ class Api(models.Model):
 
     def __str__(self):
         return self.name
+
+class Price(models.Model):
+    path = models.CharField(max_length=256, blank=True, null=True)
+    price = models.BigIntegerField(blank=True, null=True)
+    service_name = models.ForeignKey(Api, on_delete=models.CASCADE)
+
+    def __unicode__(self):
+        return self.service_name
+
+    def __str__(self):
+        return self.service_name
+
+    created_by =  models.ForeignKey( User,
+        verbose_name="Created By API user ID",
+        on_delete=models.SET_NULL,
+        related_name="created_by_user_id",
+        db_column='created_by', blank=True, null=True
+    )
+
+    modified_by =  models.ForeignKey( User,
+        verbose_name="Modified By API user ID",
+        on_delete=models.SET_NULL,
+        related_name="modified_by_user_id",
+        db_column='modified_by', blank=True, null=True
+    )
