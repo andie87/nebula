@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Api, Consumer
+from .models import Api, Consumer, Log_api, Price
 from django.db.models import Q
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
@@ -22,6 +22,10 @@ class MyUserAdmin(UserAdmin):
                 (_('Personal info'), {'fields': ('first_name', 'last_name', 'email')}),
                 (_('Permissions'), {'fields': perm_fields}),
                 (_('Important dates'), {'fields': ('last_login', 'date_joined')})]
+
+class LogAdmin(admin.ModelAdmin):
+  list_display = ('path', 'service_name', 'inserted_time', 'request', 'response' )
+  search_fields = ['path', 'service_name', 'request']
 
 class ApiAdmin(admin.ModelAdmin):
   list_display = ('request_path','exposed_url',  'get_consumers','description', 'created_by' )
@@ -98,6 +102,8 @@ class ConsumerAdmin(admin.ModelAdmin):
 
 # Register your models here.
 admin.site.register(Api, ApiAdmin)
+admin.site.register(Log_api, LogAdmin)
+admin.site.register(Price)
 admin.site.register(Consumer, ConsumerAdmin)
 admin.site.unregister(User)
 admin.site.register(User, MyUserAdmin)

@@ -4,6 +4,7 @@ import datetime
 import time
 
 from django.conf import settings
+from apigateway.models import Consumer, Log_api, Price
 #from vendor.elasticsearch.helper import Elastic
 
 
@@ -32,12 +33,21 @@ class UploadDoc:
             #elastic = Elastic()
             #response, status, err = elastic.insert_document( index_log, document_id, self.messages)
 
+            log_api = Log_api(path=self.messages["path"],service_name=self.messages["service_name"],
+                              user=self.messages["user"], time_stamp=self.messages["time_stamp"],
+                              response_time=self.messages["response_time"],MM=self.messages["MM"] , HH=self.messages["HH"],
+                              DD=self.messages["DD"], request=self.messages["request"], response=self.messages["response"],
+                              status_code=self.messages["status_code"],retry_counter=self.messages["retry_counter"],
+                              inserted_time=self.messages["inserted_time"])
+            log_api.save()
+
             # if not status:
             #     raise ValueError(err)
 
             print('[{}] INGESTED REGULER DATA %s ROWS at {}'.format( self.messages, datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
         except Exception as err:
             error_string = ('[{}] [{}] failed ingest, {}'.format(self.messages, datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), err))
+            print(error_string)
             logger.error(error_string)
             self.messages["result"] = False
             return self.messages, "", False

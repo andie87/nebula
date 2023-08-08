@@ -22,10 +22,10 @@ def alphanumerica_and_space_only(value):
 # Create your models here.
 class Consumer(models.Model):
 
-    def generate_key(self):
+    def generate_key():
         return ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(10))
 
-    def generate_secret(self):
+    def generate_secret():
         return secrets.token_urlsafe(32)
 
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -56,7 +56,7 @@ class Log_api(models.Model):
     path = models.CharField(max_length=256, blank=True, null=True)
     user = models.CharField(max_length=64, blank=True, null=True)
     service_name = models.CharField(max_length=64, blank=True, null=True)
-    response_time = models.DecimalField(blank=True, null=True)
+    response_time = models.DecimalField(max_digits=19, decimal_places=10, blank=True, null=True)
     time_stamp = models.DateTimeField(blank=True, null=True)
     MM = models.CharField(max_length=64, blank=True, null=True)
     HH = models.CharField(max_length=64, blank=True, null=True)
@@ -261,15 +261,15 @@ class Price(models.Model):
         return self.service_name
 
     created_by =  models.ForeignKey( User,
-        verbose_name="Created By API user ID",
+        verbose_name="Created By Price user ID",
         on_delete=models.SET_NULL,
-        related_name="created_by_user_id",
+        related_name="created_by_price_user_id",
         db_column='created_by', blank=True, null=True
     )
 
     modified_by =  models.ForeignKey( User,
-        verbose_name="Modified By API user ID",
+        verbose_name="Modified By Price user ID",
         on_delete=models.SET_NULL,
-        related_name="modified_by_user_id",
+        related_name="modified_by_price_user_id",
         db_column='modified_by', blank=True, null=True
     )
