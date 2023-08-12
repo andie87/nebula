@@ -75,7 +75,6 @@ CONFLUENT_KAFKA_CONSUMER = {"bootstrap.servers": BROKER_KAFKA,\
 
 INDEX_NAME = 'apigw_log'
 
-
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         #'rest_framework.authentication.BasicAuthentication',
@@ -94,7 +93,3 @@ REST_FRAMEWORK = {
         'gateway': '{}/minute'.format(os.environ.get('RATE_LIMIT', '100'))
     }
 }
-
-
-
-
