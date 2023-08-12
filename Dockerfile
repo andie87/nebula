@@ -4,9 +4,6 @@ RUN mkdir /www
 RUN mkdir static
 WORKDIR /www
 
-ARG DEPLOYMENT_ENV=dev
-ENV DJANGO_ENV=${DEPLOYMENT_ENV}
-
 COPY ./project /www/project/
 COPY ./requirements.txt /www/
 RUN ls

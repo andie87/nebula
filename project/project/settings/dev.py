@@ -20,11 +20,11 @@ import os
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'api_management',
-        'USER': 'app_apimgmt',
-        'PASSWORD': 'app_APIMGMT@123#',
-        'HOST': 'ec2-54-255-145-17.ap-southeast-1.compute.amazonaws.com',
-        'PORT': '3306',
+        'NAME': os.environ.get('DB_NAME', ''),
+        'USER': os.environ.get('DB_USER', ''),
+        'PASSWORD': os.environ.get('DB_PASSWORD', ''),
+        'HOST': os.environ.get('DB_HOST', ''),
+        'PORT': os.environ.get('DB_PORT', ''),
     }
 }
 
@@ -43,7 +43,7 @@ CACHES = {
     }
 }
 
-BROKER_KAFKA = 'localhost:9092'
+BROKER_KAFKA = os.environ.get('BROKER_KAFKA', '')
 TOPIC_KAFKA = ["API_GATEWAY_LOG"]
 
 
@@ -53,7 +53,7 @@ CONFLUENT_KAFKA_PRODUCER = {"bootstrap.servers": BROKER_KAFKA,
 KAFKA_PRODUCER = Producer(CONFLUENT_KAFKA_PRODUCER)
 
 
-REDIS_HOST = 'localhost'
+REDIS_HOST = os.environ.get('REDIS_HOST', '')
 REDIS_PASSWORD = None
 REDIS_PORT = 6379
 
