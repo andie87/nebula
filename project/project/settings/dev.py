@@ -19,49 +19,43 @@ import os
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'api_gateway',
-        'USER': 'postgres',
-        'PASSWORD': 'qazwer123',
-        'HOST': '34.101.83.119',
-        'PORT': '5432',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'api_management',
+        'USER': 'app_apimgmt',
+        'PASSWORD': 'app_APIMGMT@123#',
+        'HOST': 'ec2-54-255-145-17.ap-southeast-1.compute.amazonaws.com',
+        'PORT': '3306',
     }
 }
-
-
-
 
 DEBUG = True
 
 ASSET_ROOT = os.path.join(os.path.dirname(BASE_DIR), "project/assets")
 
 CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-        'TIMEOUT': None,
-        'LOCATION': [
-            'localhost:11211'
-        ]
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:30001/1",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient"
+        },
+        "KEY_PREFIX": "example"
     }
 }
 
-REDIS_HOST = '10.30.225.102'
-REDIS_PASSWORD = 'E9Pdcux6oYpp'
-
-# REDIS_HOST = 'localhost'
-# REDIS_PASSWORD = None
-
-PORT = 7051
-
-ENV = 'dev'
-
-# CONNECTION = psycopg2.connect(host= DATABASES["default"]['HOST'], database=DATABASES["default"]['NAME'], \
-#     user=DATABASES["default"]['USER'], password=DATABASES["default"]['PASSWORD'])
-# CURS = CONNECTION.cursor()
-
-
-BROKER_KAFKA = '10.30.225.102:9092'
+BROKER_KAFKA = 'localhost:9092'
 TOPIC_KAFKA = ["API_GATEWAY_LOG"]
+
+
+CONFLUENT_KAFKA_PRODUCER = {"bootstrap.servers": BROKER_KAFKA,
+                            "retries": "5"}
+
+KAFKA_PRODUCER = Producer(CONFLUENT_KAFKA_PRODUCER)
+
+
+REDIS_HOST = 'localhost'
+REDIS_PASSWORD = None
+REDIS_PORT = 6379
 
 
 CONFLUENT_KAFKA_CONSUMER = {"bootstrap.servers": BROKER_KAFKA,\
@@ -73,7 +67,4 @@ CONFLUENT_KAFKA_CONSUMER = {"bootstrap.servers": BROKER_KAFKA,\
 
 INDEX_NAME = 'apigw_log'
 
-
-print("DEV")
-print("setting succesfully loaded")
 

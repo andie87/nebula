@@ -14,9 +14,9 @@ def connect_to_redis():
     ## https://stackoverflow.com/questions/24875806/redis-in-python-how-do-you-close-the-connection/24876863#24876863
 
     if settings.REDIS_PASSWORD:
-        redis_ins = redis.StrictRedis(host=settings.REDIS_HOST, port=6379, db=0, password=settings.REDIS_PASSWORD )
+        redis_ins = redis.StrictRedis(host=settings.REDIS_HOST, port=settings.REDIS_PORT, db=0, password=settings.REDIS_PASSWORD )
     else:
-        redis_ins = redis.StrictRedis(host=settings.REDIS_HOST, port=6379, db=0 )
+        redis_ins = redis.StrictRedis(host=settings.REDIS_HOST, port=settings.REDIS_PORT, db=0 )
     return redis_ins
 
 
