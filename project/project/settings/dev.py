@@ -19,45 +19,69 @@ import os
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'api_gateway',
-        'USER': 'postgres',
-        'PASSWORD': 'qazwer123',
-        'HOST': '34.101.83.119',
-        'PORT': '5432',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': os.environ.get('DB_NAME', ''),
+        'USER': os.environ.get('DB_USER', ''),
+        'PASSWORD': os.environ.get('DB_PASSWORD', ''),
+        'HOST': os.environ.get('DB_HOST', ''),
+        'PORT': os.environ.get('DB_PORT', ''),
     }
 }
-
-
-
 
 DEBUG = True
 
 ASSET_ROOT = os.path.join(os.path.dirname(BASE_DIR), "project/assets")
 
 CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-        'TIMEOUT': None,
-        'LOCATION': [
-            'localhost:11211'
-        ]
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:30001/1",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient"
+        },
+        "KEY_PREFIX": "example"
     }
 }
 
-REDIS_HOST = '10.30.225.102'
-REDIS_PASSWORD = 'E9Pdcux6oYpp'
+BROKER_KAFKA = os.environ.get('BROKER_KAFKA', '')
+TOPIC_KAFKA = ["API_GATEWAY_LOG"]
 
-# REDIS_HOST = 'localhost'
-# REDIS_PASSWORD = None
 
-PORT = 7051
+CONFLUENT_KAFKA_PRODUCER = {"bootstrap.servers": BROKER_KAFKA,
+                            "retries": "5"}
 
-ENV = 'dev'
+KAFKA_PRODUCER = Producer(CONFLUENT_KAFKA_PRODUCER)
 
-# CONNECTION = psycopg2.connect(host= DATABASES["default"]['HOST'], database=DATABASES["default"]['NAME'], \
-#     user=DATABASES["default"]['USER'], password=DATABASES["default"]['PASSWORD'])
-# CURS = CONNECTION.cursor()
-print("DEV")
-print("setting succesfully loaded")
 
+REDIS_HOST = os.environ.get('REDIS_HOST', '')
+REDIS_PASSWORD = None
+REDIS_PORT = 6379
+
+
+CONFLUENT_KAFKA_CONSUMER = {"bootstrap.servers": BROKER_KAFKA,\
+                            "group.id": "apigwlistener",\
+                            "enable.auto.commit": True,\
+                            "session.timeout.ms": 6000,\
+                            "default.topic.config": {"auto.offset.reset": "smallest"}\
+                            }
+
+INDEX_NAME = 'apigw_log'
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        #'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ),
+    'DEFAULT_FILTER_BACKENDS': (
+        'rest_framework_filters.backends.DjangoFilterBackend',
+    ),
+    'DEFAULT_THROTTLE_CLASSES': [
+        'rest_framework.throttling.AnonRateThrottle',
+        'rest_framework.throttling.UserRateThrottle'
+    ],
+    'DEFAULT_THROTTLE_RATES': {
+        'anon': '5/minute',
+        'user': '5/minute',
+        'gateway': '{}/minute'.format(os.environ.get('RATE_LIMIT', '100'))
+    }
+}

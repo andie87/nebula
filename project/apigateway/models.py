@@ -1,19 +1,22 @@
 # -*- coding: utf-8 -*-
 import requests, json
-import string
-import random
 import secrets
 import time
 import hmac, hashlib, base64
-
+import random, string, re
+from django.core.exceptions import ValidationError
 
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from rest_framework.authentication import get_authorization_header, BasicAuthentication
 from .auth import CacheBasicAuthentication
+from django.conf import  settings
 
-
+def alphanumerica_and_space_only(value):
+    valid = re.match(r'^[a-zA-Z\d\-_\s]+$', value) is not None
+    if not valid:
+        raise ValidationError("only alphabets , numeric, dash ( - ) and space are allowed")
 
 
 # Create your models here.
@@ -49,6 +52,30 @@ class Consumer(models.Model):
     def __str__(self):
         return self.user.username
 
+class Log_api(models.Model):
+    path = models.CharField(max_length=256, blank=True, null=True)
+    user = models.CharField(max_length=64, blank=True, null=True)
+    service_name = models.CharField(max_length=64, blank=True, null=True)
+    response_time = models.DecimalField(max_digits=19, decimal_places=10, blank=True, null=True)
+    time_stamp = models.DateTimeField(blank=True, null=True)
+    MM = models.CharField(max_length=64, blank=True, null=True)
+    HH = models.CharField(max_length=64, blank=True, null=True)
+    DD = models.CharField(max_length=64, blank=True, null=True)
+    request = models.TextField( blank=True, null=True)
+    response = models.TextField( blank=True, null=True)
+    status_code = models.IntegerField(blank=True, null=True)
+    retry_counter = models.IntegerField(blank=True, null=True)
+    inserted_time = models.BigIntegerField(blank=True, null=True)
+
+    def __unicode__(self):
+        return self.path
+
+    def __str__(self):
+        return self.path
+
+
+
+
 class Api(models.Model):
     PLUGIN_CHOICE_LIST  = (
         (0, _('Passthrough')),
@@ -57,8 +84,8 @@ class Api(models.Model):
         (3, _('Server auth')),
         (4, _('HMAC')),
     )
-    name = models.CharField(max_length=128, unique=True)
-    request_path = models.CharField(max_length=255)
+    name = models.CharField(max_length=128, unique=True, validators=[alphanumerica_and_space_only])
+    request_path = models.CharField(max_length=255, editable=False)
     upstream_url = models.CharField(max_length=255)
     plugin = models.IntegerField(choices=PLUGIN_CHOICE_LIST, default=0)
     consumers = models.ManyToManyField(Consumer, blank=True)
@@ -76,9 +103,13 @@ class Api(models.Model):
         related_name="modified_by_api_user_id",
         db_column='modified_by', blank=True, null=True
     )
-
+    
+    @property
+    def exposed_url(self):
+        return "{}/service{}/".format(settings.DEFAULT_REDIRECT_URL, self.request_path)
 
     def save(self, *args, **kwargs):
+        self.name = self.name.strip().replace(" ","-")
         self.request_path = f"/{self.name}"
         super(Api, self).save(*args, **kwargs)
 
@@ -210,10 +241,35 @@ class Api(models.Model):
         else:
             data = request.data
 
-        return method_map[method](url, headers=headers, data=data, files=request.FILES)
+        return method_map[method](url, headers=headers, data=data, files=request.FILES, verify=False)
 
     def __unicode__(self):
         return self.name
 
     def __str__(self):
         return self.name
+
+class Price(models.Model):
+    path = models.CharField(max_length=256, blank=True, null=True)
+    price = models.BigIntegerField(blank=True, null=True)
+    service_name = models.ForeignKey(Api, on_delete=models.CASCADE)
+
+    def __unicode__(self):
+        return self.service_name
+
+    def __str__(self):
+        return self.service_name
+
+    created_by =  models.ForeignKey( User,
+        verbose_name="Created By Price user ID",
+        on_delete=models.SET_NULL,
+        related_name="created_by_price_user_id",
+        db_column='created_by', blank=True, null=True
+    )
+
+    modified_by =  models.ForeignKey( User,
+        verbose_name="Modified By Price user ID",
+        on_delete=models.SET_NULL,
+        related_name="modified_by_price_user_id",
+        db_column='modified_by', blank=True, null=True
+    )

@@ -9,10 +9,10 @@ from rest_framework.authentication import get_authorization_header, BasicAuthent
 class CacheBasicAuthentication(BasicAuthentication):
     def __init__(self):
         if settings.REDIS_PASSWORD:
-            self.redis_ins = redis.StrictRedis(host=settings.REDIS_HOST, port=6379, db=0,
+            self.redis_ins = redis.StrictRedis(host=settings.REDIS_HOST, port=settings.REDIS_PORT, db=0,
                                                password=settings.REDIS_PASSWORD)
         else:
-            self.redis_ins = redis.StrictRedis(host=settings.REDIS_HOST, port=6379, db=0)
+            self.redis_ins = redis.StrictRedis(host=settings.REDIS_HOST, port=settings.REDIS_PORT, db=0)
 
     def authenticate_credentials(self, userid, password, request=None):
         """

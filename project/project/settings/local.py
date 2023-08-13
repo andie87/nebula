@@ -19,12 +19,12 @@ import os
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'apigateway',
-        'USER': 'postgres',
-        'PASSWORD': 'andromeda',
-        'HOST': '127.0.0.1',
-        'PORT': '5433',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'api_gateway',
+        'USER': 'root',
+        'PASSWORD': '',
+        'HOST': 'localhost',
+        'PORT': '3306',
     }
 }
 
@@ -50,7 +50,7 @@ PORT = 7051
 ENV = 'local'
 
 BROKER_KAFKA = 'localhost:9092'
-TOPIC_KAFKA = "API_GATEWAY_LOG"
+#TOPIC_KAFKA = "API_GATEWAY_LOG"
 
 
 CONFLUENT_KAFKA_PRODUCER = {"bootstrap.servers": BROKER_KAFKA,
@@ -62,5 +62,34 @@ KAFKA_PRODUCER = Producer(CONFLUENT_KAFKA_PRODUCER)
 REDIS_HOST = 'localhost'
 REDIS_PASSWORD = None
 
+BROKER_KAFKA = 'localhost:9092'
+TOPIC_KAFKA = ["API_GATEWAY_LOG"]
 
 
+CONFLUENT_KAFKA_CONSUMER = {"bootstrap.servers": BROKER_KAFKA,\
+                            "group.id": "apigwlistener",\
+                            "enable.auto.commit": True,\
+                            "session.timeout.ms": 6000,\
+                            "default.topic.config": {"auto.offset.reset": "smallest"}\
+                            }
+
+INDEX_NAME = 'apigw_log'
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        #'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ),
+    'DEFAULT_FILTER_BACKENDS': (
+        'rest_framework_filters.backends.DjangoFilterBackend',
+    ),
+    'DEFAULT_THROTTLE_CLASSES': [
+        'rest_framework.throttling.AnonRateThrottle',
+        'rest_framework.throttling.UserRateThrottle'
+    ],
+    'DEFAULT_THROTTLE_RATES': {
+        'anon': '5/minute',
+        'user': '5/minute',
+        'gateway': '{}/minute'.format(os.environ.get('RATE_LIMIT', '100'))
+    }
+}

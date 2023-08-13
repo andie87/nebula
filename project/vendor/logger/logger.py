@@ -17,20 +17,22 @@ class AccessLogMiddleware(object):
             "response_time" : response_time,
             "time_stamp": time_stamp,
             "MM": time_stamp.split("-")[1],
-            "HH": (time_stamp.split("T")[1]).split(":")[0],
-            "DD": (time_stamp.split("T")[0]).split("-")[2],
-            "request": request_body,
-            "response": response,
+            "HH": (time_stamp.split(" ")[1]).split(":")[0],
+            "DD": (time_stamp.split(" ")[0]).split("-")[2],
+            "request": str(request_body),
+            "response": str(response),
             "status_code": status_code,
             "retry_counter" : 0,
             "max_retry" : 15,
             "inserted_time" : int(time.time())
         }
+        
+        #print(f"log data {log_data}")
 
         kafka_producer = settings.KAFKA_PRODUCER
         try:
             data = json.dumps(log_data).encode('utf-8')
-            result = kafka_producer.produce(settings.TOPIC_KAFKA, data)
+            result = kafka_producer.produce(settings.TOPIC_KAFKA[0], data)
             kafka_producer.producer_poll(0)
         except Exception as ex:
             kafka_producer.producer_poll(1)

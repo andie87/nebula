@@ -49,10 +49,10 @@ PORT = 7051
 
 ENV = 'staging'
 
-WEBVIEW_AUTH = HTTPBasicAuth(
-    'webview',
-    'qazwer123'
-)
+# WEBVIEW_AUTH = HTTPBasicAuth(
+#     'webview',
+#     'qazwer123'
+# )
 
 # options = {
 #     'statsd_host': 'dogstatsd.datadog-system.svc.cluster.local',
@@ -61,10 +61,19 @@ WEBVIEW_AUTH = HTTPBasicAuth(
 # initialize(**options)
 
 BROKER_KAFKA = '10.30.225.102:9092'
-TOPIC_KAFKA = "API_GATEWAY_LOG"
+TOPIC_KAFKA = ["API_GATEWAY_LOG"]
 
 
 CONFLUENT_KAFKA_PRODUCER = {"bootstrap.servers": BROKER_KAFKA,
                             "retries": "5"}
 KAFKA_PRODUCER = Producer(CONFLUENT_KAFKA_PRODUCER)
 print(ENV)
+
+CONFLUENT_KAFKA_CONSUMER = {"bootstrap.servers": BROKER_KAFKA,\
+                            "group.id": "apigwlistener",\
+                            "enable.auto.commit": True,\
+                            "session.timeout.ms": 6000,\
+                            "default.topic.config": {"auto.offset.reset": "smallest"}\
+                            }
+
+INDEX_NAME = 'apigw_log'
